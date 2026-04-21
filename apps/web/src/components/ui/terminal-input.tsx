@@ -79,7 +79,7 @@ export function TerminalInput({
 
 	return (
 		<div className="font-mono text-sm">
-			<div className="relative rounded-md border border-zinc-800 bg-zinc-950">
+			<div className="relative rounded-md border border-zinc-700/60 bg-zinc-950/70 shadow-black/30 shadow-lg backdrop-blur-md">
 				<div
 					aria-hidden="true"
 					className="pointer-events-none absolute inset-0 overflow-hidden"
@@ -111,17 +111,17 @@ export function TerminalInput({
 					onScroll={syncOverlayScroll}
 					placeholder={PLACEHOLDER}
 					ref={textareaRef}
-					rows={8}
+					rows={6}
 					spellCheck={false}
 					style={{ lineHeight: LINE_HEIGHT }}
 					value={draft}
 				/>
 			</div>
 
-			<div className="mt-1 flex items-center justify-between text-xs text-zinc-500">
+			<div className="mt-1 flex items-center justify-between text-xs text-zinc-400">
 				<span>Ctrl+Enter pour exécuter</span>
 				<button
-					className="rounded border border-emerald-900/60 px-2 py-0.5 text-emerald-400 hover:bg-emerald-950/40"
+					className="rounded border border-emerald-800/60 bg-zinc-950/40 px-2 py-0.5 text-emerald-400 backdrop-blur-sm hover:bg-emerald-950/40"
 					onClick={run}
 					type="button"
 				>
@@ -130,11 +130,11 @@ export function TerminalInput({
 			</div>
 
 			{errors.length > 0 && (
-				<div className="mt-3 rounded-md border border-red-900/50 bg-red-950/20 p-3">
-					<div className="mb-1 text-red-400/80 text-xs uppercase tracking-wide">
+				<div className="mt-3 rounded-md border border-red-900/60 bg-red-950/40 p-3 backdrop-blur-md">
+					<div className="mb-1 text-red-300/80 text-xs uppercase tracking-wide">
 						{errors.length} error{errors.length === 1 ? "" : "s"}
 					</div>
-					<ul className="space-y-0.5 text-red-300">
+					<ul className="space-y-0.5 text-red-200">
 						{errors.map((error, index) => (
 							<li
 								key={`${error.kind}-${error.line ?? "nil"}-${index.toString()}`}
@@ -147,13 +147,13 @@ export function TerminalInput({
 			)}
 
 			{finalState && (
-				<div className="mt-3 rounded-md border border-zinc-800 bg-zinc-950/80 p-3">
-					<div className="mb-1 text-xs text-zinc-500 uppercase tracking-wide">
+				<div className="mt-3 rounded-md border border-zinc-700/60 bg-zinc-950/70 p-3 backdrop-blur-md">
+					<div className="mb-1 text-xs text-zinc-400 uppercase tracking-wide">
 						final state
 					</div>
 					<div
 						className={
-							executionTrace?.lost ? "text-red-400" : "text-emerald-400"
+							executionTrace?.lost ? "text-red-300" : "text-emerald-300"
 						}
 					>
 						{finalState}
