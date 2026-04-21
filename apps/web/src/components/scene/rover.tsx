@@ -31,7 +31,7 @@ export function Rover({ lost = false, orientation, position }: RoverProps) {
 
 	return (
 		<group
-			position={[position.x + 0.5, 0, -(position.y + 0.5)]}
+			position={[position.x, 0, -position.y]}
 			rotation={[0, ORIENTATION_ROTATION_Y[orientation], 0]}
 		>
 			<mesh position={[0, 0.32, 0]}>

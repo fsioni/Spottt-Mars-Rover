@@ -22,8 +22,8 @@ interface SceneProps {
 
 export function Scene({ scenario }: SceneProps) {
 	const { grid, rover } = scenario;
-	const width = grid.maxX + 1;
-	const height = grid.maxY + 1;
+	const width = grid.maxX;
+	const height = grid.maxY;
 
 	return (
 		<Canvas camera={{ position: [width + 4, 11, 5], fov: 45 }}>
@@ -82,18 +82,14 @@ function GridLayer({ height, width }: SizeProps) {
 function OriginHighlight() {
 	return (
 		<group>
-			<mesh position={[0.5, 0.005, -0.5]} rotation={FLAT_ROTATION}>
-				<planeGeometry args={[0.92, 0.92]} />
-				<meshStandardMaterial
-					color={ORIGIN_HIGHLIGHT_COLOR}
-					opacity={0.55}
-					transparent
-				/>
+			<mesh position={[0, 0.06, 0]}>
+				<sphereGeometry args={[0.12, 16, 12]} />
+				<meshStandardMaterial color={ORIGIN_HIGHLIGHT_COLOR} />
 			</mesh>
 			<Text
-				color="white"
-				fontSize={0.2}
-				position={[0.5, 0.02, -0.5]}
+				color={ORIGIN_HIGHLIGHT_COLOR}
+				fontSize={0.22}
+				position={[-0.35, 0.02, 0.35]}
 				rotation={FLAT_ROTATION}
 			>
 				(0,0)
