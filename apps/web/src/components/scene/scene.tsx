@@ -1,5 +1,6 @@
 import { OrbitControls, Text } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
+import type { ExecutionTrace } from "@spottt/core/engine";
 import type { Scenario } from "@spottt/core/types";
 import { useMemo } from "react";
 import { BufferGeometry, Float32BufferAttribute } from "three";
@@ -19,12 +20,15 @@ const FLAT_ROTATION: [number, number, number] = [-Math.PI / 2, 0, 0];
 
 interface SceneProps {
 	scenario: Scenario;
+	trace?: ExecutionTrace | null;
 }
 
-export function Scene({ scenario }: SceneProps) {
-	const { grid, rover } = scenario;
+export function Scene({ scenario, trace = null }: SceneProps) {
+	const { grid } = scenario;
 	const width = grid.maxX;
 	const height = grid.maxY;
+	const rover = trace?.final ?? scenario.rover;
+	const lost = trace?.lost ?? false;
 
 	return (
 		<Canvas camera={{ position: [width + 4, 11, 5], fov: 45 }}>
@@ -35,8 +39,16 @@ export function Scene({ scenario }: SceneProps) {
 			<OriginHighlight />
 			<CardinalLabels height={height} width={width} />
 			<OriginAxes />
-			<Rover orientation={rover.orientation} position={rover.position} />
-			<RoverLabel orientation={rover.orientation} position={rover.position} />
+			<Rover
+				lost={lost}
+				orientation={rover.orientation}
+				position={rover.position}
+			/>
+			<RoverLabel
+				lost={lost}
+				orientation={rover.orientation}
+				position={rover.position}
+			/>
 			<OrbitControls
 				enableDamping
 				makeDefault

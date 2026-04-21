@@ -27,7 +27,9 @@ function HomeComponent() {
 				/>
 			</div>
 			<div className="h-full w-full">
-				{scenarioResult?.ok ? <Scene scenario={scenarioResult.value} /> : null}
+				{scenarioResult?.ok ? (
+					<Scene scenario={scenarioResult.value} trace={executionTrace} />
+				) : null}
 			</div>
 		</div>
 	);
