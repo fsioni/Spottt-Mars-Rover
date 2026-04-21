@@ -3,7 +3,7 @@ import { Text } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import type { ExecutionTrace } from "@spottt/core/engine";
 import type { Scenario } from "@spottt/core/types";
-import { useMemo, useState } from "react";
+import { type RefObject, useMemo, useState } from "react";
 import { BufferGeometry, Color, Float32BufferAttribute } from "three";
 
 import { CameraController, type CameraMode } from "./camera-controller";
@@ -30,17 +30,18 @@ const ROCK_CANDIDATE_MULTIPLIER = 3;
 const DUNE_COUNT = 14;
 
 interface SceneProps {
-	currentStep?: number;
 	scenario: Scenario;
+	step?: number;
+	timeRef?: RefObject<number>;
 	trace?: ExecutionTrace | null;
 }
 
-export function Scene({ currentStep, scenario, trace = null }: SceneProps) {
+export function Scene({ scenario, step, timeRef, trace = null }: SceneProps) {
 	const { grid, rover: initialRover } = scenario;
 	const width = grid.maxX;
 	const height = grid.maxY;
 
-	const effectiveStep = currentStep ?? (trace ? trace.snapshots.length - 1 : 0);
+	const effectiveStep = step ?? (trace ? trace.snapshots.length - 1 : 0);
 	const activeRover = trace?.snapshots[effectiveStep]?.rover ?? initialRover;
 	const lost = trace?.lostAt !== undefined && effectiveStep >= trace.lostAt;
 	const [cameraMode, setCameraMode] = useState<CameraMode>("orbit");
@@ -69,11 +70,9 @@ export function Scene({ currentStep, scenario, trace = null }: SceneProps) {
 				{trace ? (
 					<GhostTrail currentStep={effectiveStep} trace={trace} />
 				) : null}
-				<Rover
-					lost={lost}
-					orientation={activeRover.orientation}
-					position={activeRover.position}
-				/>
+				{trace && timeRef ? (
+					<Rover step={effectiveStep} timeRef={timeRef} trace={trace} />
+				) : null}
 				<RoverLabel
 					lost={lost}
 					orientation={activeRover.orientation}
