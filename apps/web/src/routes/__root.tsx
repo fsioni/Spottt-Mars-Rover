@@ -20,7 +20,7 @@ function RootComponent() {
 	return (
 		<>
 			<HeadContent />
-			<div className="h-svh w-svw">
+			<div className="dark h-svh w-svw">
 				<Outlet />
 			</div>
 		</>
