@@ -1,12 +1,14 @@
 import { Button } from "@my-better-t-app/ui/components/button";
 import { Text } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
+import type { ExecutionTrace } from "@spottt/core/engine";
 import type { Scenario } from "@spottt/core/types";
 import { useMemo, useState } from "react";
 import { BufferGeometry, Float32BufferAttribute } from "three";
 
 import { CameraController, type CameraMode } from "./camera-controller";
 import { Rover } from "./rover";
+import { RoverLabel } from "./rover-label";
 
 const GROUND_COLOR = "#b07a4e";
 const CELL_COLOR = "#3a2718";
@@ -20,12 +22,15 @@ const FLAT_ROTATION: [number, number, number] = [-Math.PI / 2, 0, 0];
 
 interface SceneProps {
 	scenario: Scenario;
+	trace?: ExecutionTrace | null;
 }
 
-export function Scene({ scenario }: SceneProps) {
-	const { grid, rover } = scenario;
+export function Scene({ scenario, trace = null }: SceneProps) {
+	const { grid } = scenario;
 	const width = grid.maxX;
 	const height = grid.maxY;
+	const rover = trace?.final ?? scenario.rover;
+	const lost = trace?.lost ?? false;
 	const [cameraMode, setCameraMode] = useState<CameraMode>("orbit");
 
 	return (
@@ -38,8 +43,17 @@ export function Scene({ scenario }: SceneProps) {
 				<OriginHighlight />
 				<CardinalLabels height={height} width={width} />
 				<OriginAxes />
-				<Rover orientation={rover.orientation} position={rover.position} />
-				<CameraController mode={cameraMode} scenario={scenario} />
+				<Rover
+					lost={lost}
+					orientation={rover.orientation}
+					position={rover.position}
+				/>
+				<RoverLabel
+					lost={lost}
+					orientation={rover.orientation}
+					position={rover.position}
+				/>
+				<CameraController grid={grid} mode={cameraMode} rover={rover} />
 			</Canvas>
 			<CameraModeToggle mode={cameraMode} onChange={setCameraMode} />
 		</div>

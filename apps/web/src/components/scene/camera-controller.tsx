@@ -1,6 +1,6 @@
 import { OrbitControls } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
-import type { Scenario } from "@spottt/core/types";
+import type { GridSize, Rover } from "@spottt/core/types";
 import { useMemo, useRef } from "react";
 import { Vector3 } from "three";
 
@@ -9,8 +9,9 @@ import { ORIENTATION_ROTATION_Y } from "./rover";
 export type CameraMode = "orbit" | "follow" | "fpv";
 
 interface CameraControllerProps {
+	grid: GridSize;
 	mode: CameraMode;
-	scenario: Scenario;
+	rover: Rover;
 }
 
 const SMOOTHING_TAU_SECONDS = 0.2;
@@ -22,8 +23,7 @@ const FOLLOW_LOOKAT_Y = 0.3;
 const reusableTarget = new Vector3();
 const reusableLookAt = new Vector3();
 
-export function CameraController({ mode, scenario }: CameraControllerProps) {
-	const { grid, rover } = scenario;
+export function CameraController({ grid, mode, rover }: CameraControllerProps) {
 	const camera = useThree((state) => state.camera);
 	const yawRef = useRef(ORIENTATION_ROTATION_Y[rover.orientation]);
 	const initializedRef = useRef(false);
