@@ -1,0 +1,21 @@
+{
+  "name": "@spottt/core",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./parser": "./src/parser.ts",
+    "./types": "./src/types.ts",
+    "./errors": "./src/errors.ts"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "check-types": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@my-better-t-app/config": "workspace:*",
+    "typescript": "catalog:",
+    "vitest": "^3.2.4"
+  }
+}
