@@ -1,34 +1,27 @@
 import { createFileRoute } from "@tanstack/react-router";
 
+import { scenarioSearchSchema, useScenario } from "@/lib/scenario-search";
+
 export const Route = createFileRoute("/")({
 	component: HomeComponent,
+	validateSearch: scenarioSearchSchema,
 });
 
-const TITLE_TEXT = `
- ██████╗ ███████╗████████╗████████╗███████╗██████╗
- ██╔══██╗██╔════╝╚══██╔══╝╚══██╔══╝██╔════╝██╔══██╗
- ██████╔╝█████╗     ██║      ██║   █████╗  ██████╔╝
- ██╔══██╗██╔══╝     ██║      ██║   ██╔══╝  ██╔══██╗
- ██████╔╝███████╗   ██║      ██║   ███████╗██║  ██║
- ╚═════╝ ╚══════╝   ╚═╝      ╚═╝   ╚══════╝╚═╝  ╚═╝
-
- ████████╗    ███████╗████████╗ █████╗  ██████╗██╗  ██╗
- ╚══██╔══╝    ██╔════╝╚══██╔══╝██╔══██╗██╔════╝██║ ██╔╝
-    ██║       ███████╗   ██║   ███████║██║     █████╔╝
-    ██║       ╚════██║   ██║   ██╔══██║██║     ██╔═██╗
-    ██║       ███████║   ██║   ██║  ██║╚██████╗██║  ██╗
-    ╚═╝       ╚══════╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝
- `;
-
 function HomeComponent() {
+	const scenarioResult = useScenario();
+
+	let status = "no scenario";
+	if (scenarioResult?.ok) {
+		status = "scenario ok";
+	} else if (scenarioResult) {
+		status = `scenario invalid (${scenarioResult.error.length} error${
+			scenarioResult.error.length === 1 ? "" : "s"
+		})`;
+	}
+
 	return (
-		<div className="container mx-auto max-w-3xl px-4 py-2">
-			<pre className="overflow-x-auto font-mono text-sm">{TITLE_TEXT}</pre>
-			<div className="grid gap-6">
-				<section className="rounded-lg border p-4">
-					<h2 className="mb-2 font-medium">API Status</h2>
-				</section>
-			</div>
+		<div className="container mx-auto max-w-3xl px-4 py-2 font-mono text-sm">
+			{status}
 		</div>
 	);
 }
