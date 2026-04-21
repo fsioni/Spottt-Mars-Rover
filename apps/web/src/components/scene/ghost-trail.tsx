@@ -62,9 +62,9 @@ export function GhostTrail({
 					<mesh
 						key={`${snapshot.rover.position.x},${snapshot.rover.position.y}`}
 						position={[
-							snapshot.rover.position.x,
+							snapshot.rover.position.x + 0.5,
 							HOVER_Y,
-							-snapshot.rover.position.y,
+							-snapshot.rover.position.y - 0.5,
 						]}
 					>
 						<boxGeometry args={[CUBE_SIZE, CUBE_SIZE, CUBE_SIZE]} />

@@ -58,8 +58,8 @@ export function CameraController({ grid, mode, rover }: CameraControllerProps) {
 		}
 		yawRef.current += delta * alpha;
 
-		const roverWorldX = rover.position.x;
-		const roverWorldZ = -rover.position.y;
+		const roverWorldX = rover.position.x + 0.5;
+		const roverWorldZ = -rover.position.y - 0.5;
 		const yaw = yawRef.current;
 		const forwardX = -Math.sin(yaw);
 		const forwardZ = -Math.cos(yaw);

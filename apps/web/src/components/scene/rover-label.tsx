@@ -28,7 +28,7 @@ export function RoverLabel({
 	return (
 		<Html
 			center
-			position={[position.x, Y_OFFSET, -position.y]}
+			position={[position.x + 0.5, Y_OFFSET, -position.y - 0.5]}
 			sprite
 			style={{ pointerEvents: "none" }}
 			zIndexRange={[100, 0]}

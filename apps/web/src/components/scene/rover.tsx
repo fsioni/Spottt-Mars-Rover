@@ -27,7 +27,11 @@ export function Rover({ step, timeRef, trace }: RoverProps) {
 		() =>
 			snapshots.map(
 				(snapshot) =>
-					new Vector3(snapshot.rover.position.x, 0, -snapshot.rover.position.y)
+					new Vector3(
+						snapshot.rover.position.x + 0.5,
+						0,
+						-snapshot.rover.position.y - 0.5
+					)
 			),
 		[snapshots]
 	);
