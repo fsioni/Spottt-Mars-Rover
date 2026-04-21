@@ -5,6 +5,7 @@ import { useMemo } from "react";
 import { BufferGeometry, Float32BufferAttribute } from "three";
 
 import { Rover } from "./rover";
+import { RoverLabel } from "./rover-label";
 
 const GROUND_COLOR = "#b07a4e";
 const CELL_COLOR = "#3a2718";
@@ -35,6 +36,7 @@ export function Scene({ scenario }: SceneProps) {
 			<CardinalLabels height={height} width={width} />
 			<OriginAxes />
 			<Rover orientation={rover.orientation} position={rover.position} />
+			<RoverLabel orientation={rover.orientation} position={rover.position} />
 			<OrbitControls
 				enableDamping
 				makeDefault
