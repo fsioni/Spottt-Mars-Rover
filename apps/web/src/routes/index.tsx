@@ -28,15 +28,17 @@ function HomeComponent() {
 		: DEFAULT_SCENARIO;
 
 	return (
-		<div className="grid h-full grid-rows-[auto_1fr]">
-			<div className="container mx-auto max-w-3xl px-4 py-4">
-				<TerminalInput
-					executionTrace={executionTrace}
-					scenarioResult={scenarioResult}
-				/>
-			</div>
-			<div className="h-full w-full">
+		<div className="relative h-full w-full">
+			<div className="absolute inset-0">
 				<Scene scenario={sceneScenario} trace={executionTrace} />
+			</div>
+			<div className="pointer-events-none absolute inset-0 p-4">
+				<div className="pointer-events-auto w-full max-w-md">
+					<TerminalInput
+						executionTrace={executionTrace}
+						scenarioResult={scenarioResult}
+					/>
+				</div>
 			</div>
 		</div>
 	);
