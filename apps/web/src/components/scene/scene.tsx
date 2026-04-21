@@ -1,9 +1,11 @@
-import { OrbitControls, Text } from "@react-three/drei";
+import { Button } from "@my-better-t-app/ui/components/button";
+import { Text } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import type { Scenario } from "@spottt/core/types";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { BufferGeometry, Float32BufferAttribute } from "three";
 
+import { CameraController, type CameraMode } from "./camera-controller";
 import { Rover } from "./rover";
 
 const GROUND_COLOR = "#b07a4e";
@@ -24,25 +26,59 @@ export function Scene({ scenario }: SceneProps) {
 	const { grid, rover } = scenario;
 	const width = grid.maxX;
 	const height = grid.maxY;
+	const [cameraMode, setCameraMode] = useState<CameraMode>("orbit");
 
 	return (
-		<Canvas camera={{ position: [width + 4, 11, 5], fov: 45 }}>
-			<ambientLight intensity={0.55} />
-			<directionalLight intensity={1} position={[10, 14, 6]} />
-			<Ground height={height} width={width} />
-			<GridLayer height={height} width={width} />
-			<OriginHighlight />
-			<CardinalLabels height={height} width={width} />
-			<OriginAxes />
-			<Rover orientation={rover.orientation} position={rover.position} />
-			<OrbitControls
-				enableDamping
-				makeDefault
-				target={[width / 2, 0, -height / 2]}
-			/>
-		</Canvas>
+		<div className="relative h-full w-full">
+			<Canvas camera={{ position: [width + 4, 11, 5], fov: 45 }}>
+				<ambientLight intensity={0.55} />
+				<directionalLight intensity={1} position={[10, 14, 6]} />
+				<Ground height={height} width={width} />
+				<GridLayer height={height} width={width} />
+				<OriginHighlight />
+				<CardinalLabels height={height} width={width} />
+				<OriginAxes />
+				<Rover orientation={rover.orientation} position={rover.position} />
+				<CameraController mode={cameraMode} scenario={scenario} />
+			</Canvas>
+			<CameraModeToggle mode={cameraMode} onChange={setCameraMode} />
+		</div>
 	);
 }
+
+interface CameraModeToggleProps {
+	mode: CameraMode;
+	onChange: (mode: CameraMode) => void;
+}
+
+function CameraModeToggle({ mode, onChange }: CameraModeToggleProps) {
+	return (
+		<div
+			aria-label="Mode caméra"
+			className="absolute top-3 right-3 flex gap-1 rounded-md border border-border bg-background/80 p-1 shadow-sm backdrop-blur"
+			role="toolbar"
+		>
+			{CAMERA_MODES.map((option) => (
+				<Button
+					aria-pressed={mode === option.value}
+					key={option.value}
+					onClick={() => onChange(option.value)}
+					size="sm"
+					type="button"
+					variant={mode === option.value ? "secondary" : "ghost"}
+				>
+					{option.label}
+				</Button>
+			))}
+		</div>
+	);
+}
+
+const CAMERA_MODES: ReadonlyArray<{ label: string; value: CameraMode }> = [
+	{ label: "Orbit", value: "orbit" },
+	{ label: "Follow", value: "follow" },
+	{ label: "FPV", value: "fpv" },
+];
 
 interface SizeProps {
 	height: number;

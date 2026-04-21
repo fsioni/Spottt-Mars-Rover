@@ -6,7 +6,7 @@ import type { Orientation, Position } from "@spottt/core/types";
  *   N=-Z (rot 0), E=+X (rot -π/2), S=+Z (rot π), W=-X (rot π/2).
  * Cf. docs/decisions.md §4.1 for the rover.y → -scene.z mapping.
  */
-const ORIENTATION_ROTATION_Y: Record<Orientation, number> = {
+export const ORIENTATION_ROTATION_Y: Record<Orientation, number> = {
 	N: 0,
 	E: -Math.PI / 2,
 	S: Math.PI,
