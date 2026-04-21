@@ -1,6 +1,9 @@
+import { execute } from "@spottt/core/engine";
 import { createFileRoute } from "@tanstack/react-router";
+import { useMemo } from "react";
 
 import { Scene } from "@/components/scene/scene";
+import { TerminalInput } from "@/components/ui/terminal-input";
 import { scenarioSearchSchema, useScenario } from "@/lib/scenario-search";
 
 export const Route = createFileRoute("/")({
@@ -10,20 +13,18 @@ export const Route = createFileRoute("/")({
 
 function HomeComponent() {
 	const scenarioResult = useScenario();
-
-	let status = "no scenario";
-	if (scenarioResult?.ok) {
-		status = "scenario ok";
-	} else if (scenarioResult) {
-		status = `scenario invalid (${scenarioResult.error.length} error${
-			scenarioResult.error.length === 1 ? "" : "s"
-		})`;
-	}
+	const executionTrace = useMemo(
+		() => (scenarioResult?.ok ? execute(scenarioResult.value) : null),
+		[scenarioResult]
+	);
 
 	return (
 		<div className="grid h-full grid-rows-[auto_1fr]">
-			<div className="container mx-auto max-w-3xl px-4 py-2 font-mono text-sm">
-				{status}
+			<div className="container mx-auto max-w-3xl px-4 py-4">
+				<TerminalInput
+					executionTrace={executionTrace}
+					scenarioResult={scenarioResult}
+				/>
 			</div>
 			<div className="h-full w-full">
 				{scenarioResult?.ok ? <Scene scenario={scenarioResult.value} /> : null}
