@@ -36,7 +36,7 @@ function HomeComponent() {
 				/>
 			</div>
 			<div className="h-full w-full">
-				<Scene scenario={sceneScenario} />
+				<Scene scenario={sceneScenario} trace={executionTrace} />
 			</div>
 		</div>
 	);

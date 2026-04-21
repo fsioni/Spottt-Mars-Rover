@@ -49,3 +49,12 @@ export const isInsideGrid = (position: Position, grid: GridSize): boolean =>
 	position.y >= 0 &&
 	position.x <= grid.maxX &&
 	position.y <= grid.maxY;
+
+export const formatRoverState = (
+	position: Position,
+	orientation: Orientation,
+	lost = false
+): string => {
+	const base = `(${position.x},${position.y},${orientation})`;
+	return lost ? `${base} LOST` : base;
+};
