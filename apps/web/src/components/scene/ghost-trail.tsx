@@ -1,5 +1,6 @@
 import { useFrame } from "@react-three/fiber";
 import type { ExecutionTrace, Snapshot } from "@spottt/core/engine";
+import type { Position } from "@spottt/core/types";
 import { useRef } from "react";
 import type { Group } from "three";
 
@@ -46,7 +47,11 @@ export function GhostTrail({
 		}
 	});
 
-	const cubes = dedupeByCell(trace.snapshots.slice(0, currentStep + 1));
+	const current = trace.snapshots[currentStep];
+	const cubes = dedupeByCell(
+		trace.snapshots.slice(0, currentStep + 1),
+		current?.rover.position
+	);
 
 	return (
 		<group ref={groupRef}>
@@ -77,11 +82,17 @@ export function GhostTrail({
 	);
 }
 
-function dedupeByCell(snapshots: Snapshot[]): Snapshot[] {
+function cellKey(position: Position): string {
+	return `${position.x},${position.y}`;
+}
+
+function dedupeByCell(snapshots: Snapshot[], exclude?: Position): Snapshot[] {
 	const byCell = new Map<string, Snapshot>();
 	for (const snapshot of snapshots) {
-		const key = `${snapshot.rover.position.x},${snapshot.rover.position.y}`;
-		byCell.set(key, snapshot);
+		byCell.set(cellKey(snapshot.rover.position), snapshot);
+	}
+	if (exclude) {
+		byCell.delete(cellKey(exclude));
 	}
 	return Array.from(byCell.values());
 }
