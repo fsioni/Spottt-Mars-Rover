@@ -1,5 +1,9 @@
 import { Html } from "@react-three/drei";
-import type { Orientation, Position } from "@spottt/core/types";
+import {
+	formatRoverState,
+	type Orientation,
+	type Position,
+} from "@spottt/core/types";
 
 const Y_OFFSET = 1.4;
 
@@ -19,7 +23,7 @@ export function RoverLabel({
 	orientation,
 	position,
 }: RoverLabelProps) {
-	const text = `(${position.x},${position.y},${orientation})${lost ? " LOST" : ""}`;
+	const text = formatRoverState(position, orientation, lost);
 
 	return (
 		<Html
