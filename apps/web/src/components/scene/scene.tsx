@@ -38,8 +38,8 @@ interface SceneProps {
 
 export function Scene({ scenario, step, timeRef, trace = null }: SceneProps) {
 	const { grid, rover: initialRover } = scenario;
-	const width = grid.maxX;
-	const height = grid.maxY;
+	const width = grid.maxX + 1;
+	const height = grid.maxY + 1;
 
 	const effectiveStep = step ?? (trace ? trace.snapshots.length - 1 : 0);
 	const snapshotRover = trace?.snapshots[effectiveStep]?.rover ?? initialRover;
