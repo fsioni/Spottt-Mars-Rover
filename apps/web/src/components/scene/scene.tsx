@@ -1,9 +1,11 @@
 import { OrbitControls, Text } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
+import type { ExecutionTrace } from "@spottt/core/engine";
 import type { Scenario } from "@spottt/core/types";
 import { useMemo } from "react";
 import { BufferGeometry, Float32BufferAttribute } from "three";
 
+import { GhostTrail } from "./ghost-trail";
 import { Rover } from "./rover";
 
 const GROUND_COLOR = "#b07a4e";
@@ -17,13 +19,23 @@ const WEST_COLOR = "#1e88e5";
 const FLAT_ROTATION: [number, number, number] = [-Math.PI / 2, 0, 0];
 
 interface SceneProps {
+	currentStep?: number;
+	executionTrace?: ExecutionTrace | null;
 	scenario: Scenario;
 }
 
-export function Scene({ scenario }: SceneProps) {
-	const { grid, rover } = scenario;
+export function Scene({ currentStep, executionTrace, scenario }: SceneProps) {
+	const { grid, rover: initialRover } = scenario;
 	const width = grid.maxX;
 	const height = grid.maxY;
+
+	const effectiveStep =
+		currentStep ?? (executionTrace ? executionTrace.snapshots.length - 1 : 0);
+	const activeRover =
+		executionTrace?.snapshots[effectiveStep]?.rover ?? initialRover;
+	const lost =
+		executionTrace?.lostAt !== undefined &&
+		effectiveStep >= executionTrace.lostAt;
 
 	return (
 		<Canvas camera={{ position: [width + 4, 11, 5], fov: 45 }}>
@@ -34,7 +46,14 @@ export function Scene({ scenario }: SceneProps) {
 			<OriginHighlight />
 			<CardinalLabels height={height} width={width} />
 			<OriginAxes />
-			<Rover orientation={rover.orientation} position={rover.position} />
+			{executionTrace ? (
+				<GhostTrail currentStep={effectiveStep} trace={executionTrace} />
+			) : null}
+			<Rover
+				lost={lost}
+				orientation={activeRover.orientation}
+				position={activeRover.position}
+			/>
 			<OrbitControls
 				enableDamping
 				makeDefault

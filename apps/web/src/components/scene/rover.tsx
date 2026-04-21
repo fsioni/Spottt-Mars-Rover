@@ -1,17 +1,6 @@
 import type { Orientation, Position } from "@spottt/core/types";
 
-/**
- * Rover group's local forward is -Z (chassis + arrow cone baked to point -Z).
- * rotation.y maps spec orientation to world direction:
- *   N=-Z (rot 0), E=+X (rot -π/2), S=+Z (rot π), W=-X (rot π/2).
- * Cf. docs/decisions.md §4.1 for the rover.y → -scene.z mapping.
- */
-const ORIENTATION_ROTATION_Y: Record<Orientation, number> = {
-	N: 0,
-	E: -Math.PI / 2,
-	S: Math.PI,
-	W: Math.PI / 2,
-};
+import { ORIENTATION_ROTATION_Y } from "./orientation";
 
 const CHASSIS_COLOR = "#2196f3";
 const CHASSIS_COLOR_LOST = "#ff6b9d";
