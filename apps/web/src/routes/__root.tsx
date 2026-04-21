@@ -1,7 +1,5 @@
 import { createRootRoute, HeadContent, Outlet } from "@tanstack/react-router";
 
-import { ThemeProvider } from "@/components/theme-provider";
-
 import "../index.css";
 
 export const Route = createRootRoute({
@@ -22,16 +20,9 @@ function RootComponent() {
 	return (
 		<>
 			<HeadContent />
-			<ThemeProvider
-				attribute="class"
-				defaultTheme="dark"
-				disableTransitionOnChange
-				storageKey="vite-ui-theme"
-			>
-				<div className="h-svh w-svw">
-					<Outlet />
-				</div>
-			</ThemeProvider>
+			<div className="h-svh w-svw">
+				<Outlet />
+			</div>
 		</>
 	);
 }
