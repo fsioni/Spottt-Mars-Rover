@@ -6,7 +6,8 @@
     "paths": {
       "@my-better-t-app/ui/*": ["./src/*"]
     },
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "types": []
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"],
   "exclude": ["node_modules"]
