@@ -1,10 +1,16 @@
 import { execute } from "@spottt/core/engine";
+import type { Scenario } from "@spottt/core/types";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo } from "react";
 
 import { Scene } from "@/components/scene/scene";
 import { TerminalInput } from "@/components/ui/terminal-input";
 import { scenarioSearchSchema, useScenario } from "@/lib/scenario-search";
+
+const DEFAULT_SCENARIO: Scenario = {
+	grid: { maxX: 5, maxY: 5 },
+	rover: { commands: [], orientation: "N", position: { x: 0, y: 0 } },
+};
 
 export const Route = createFileRoute("/")({
 	component: HomeComponent,
@@ -17,6 +23,9 @@ function HomeComponent() {
 		() => (scenarioResult?.ok ? execute(scenarioResult.value) : null),
 		[scenarioResult]
 	);
+	const sceneScenario = scenarioResult?.ok
+		? scenarioResult.value
+		: DEFAULT_SCENARIO;
 
 	return (
 		<div className="grid h-full grid-rows-[auto_1fr]">
@@ -27,7 +36,7 @@ function HomeComponent() {
 				/>
 			</div>
 			<div className="h-full w-full">
-				{scenarioResult?.ok ? <Scene scenario={scenarioResult.value} /> : null}
+				<Scene scenario={sceneScenario} />
 			</div>
 		</div>
 	);
