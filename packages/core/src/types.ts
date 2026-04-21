@@ -43,3 +43,9 @@ export const isOrientation = (input: string): input is Orientation =>
 
 export const isCommand = (input: string): input is Command =>
 	(COMMANDS as readonly string[]).includes(input);
+
+export const isInsideGrid = (position: Position, grid: GridSize): boolean =>
+	position.x >= 0 &&
+	position.y >= 0 &&
+	position.x <= grid.maxX &&
+	position.y <= grid.maxY;

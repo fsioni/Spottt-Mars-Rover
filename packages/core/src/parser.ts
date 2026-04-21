@@ -4,6 +4,7 @@ import {
 	err,
 	type GridSize,
 	isCommand,
+	isInsideGrid,
 	isOrientation,
 	type Orientation,
 	ok,
@@ -111,7 +112,7 @@ const parseRoverLine = (
 		}
 	}
 
-	if (grid !== null && (x < 0 || y < 0 || x > grid.maxX || y > grid.maxY)) {
+	if (grid !== null && !isInsideGrid({ x, y }, grid)) {
 		errors.push(
 			makeError(
 				"OutOfBoundsInitial",
