@@ -1,10 +1,12 @@
-import { OrbitControls, Text } from "@react-three/drei";
+import { Button } from "@my-better-t-app/ui/components/button";
+import { Text } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import type { ExecutionTrace } from "@spottt/core/engine";
 import type { Scenario } from "@spottt/core/types";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { BufferGeometry, Color, Float32BufferAttribute } from "three";
 
+import { CameraController, type CameraMode } from "./camera-controller";
 import { Rover } from "./rover";
 import { RoverLabel } from "./rover-label";
 
@@ -37,47 +39,81 @@ export function Scene({ scenario, trace = null }: SceneProps) {
 	const height = grid.maxY;
 	const rover = trace?.final ?? scenario.rover;
 	const lost = trace?.lost ?? false;
+	const [cameraMode, setCameraMode] = useState<CameraMode>("orbit");
 	const gridSpan = Math.max(width, height);
 	const fogNear = gridSpan + 8;
 	const fogFar = gridSpan + 60;
 
 	return (
-		<Canvas camera={{ position: [width + 4, 11, 5], fov: 45 }}>
-			<color args={[SKY_COLOR]} attach="background" />
-			<fog args={[SKY_COLOR, fogNear, fogFar]} attach="fog" />
-			<ambientLight color="#c49a7a" intensity={0.45} />
-			<directionalLight
-				color="#ffd9b0"
-				intensity={1.1}
-				position={[10, 14, 6]}
-			/>
-			<hemisphereLight args={["#f4b88a", "#7a3419", 0.35]} />
-			<Backdrop />
-			<Ground height={height} width={width} />
-			<GridLayer height={height} width={width} />
-			<OriginHighlight />
-			<CardinalLabels height={height} width={width} />
-			<OriginAxes />
-			<Rover
-				lost={lost}
-				orientation={rover.orientation}
-				position={rover.position}
-			/>
-			<RoverLabel
-				lost={lost}
-				orientation={rover.orientation}
-				position={rover.position}
-			/>
-			<Rocks gridHeight={height} gridWidth={width} />
-			<Dunes gridHeight={height} gridWidth={width} />
-			<OrbitControls
-				enableDamping
-				makeDefault
-				target={[width / 2, 0, -height / 2]}
-			/>
-		</Canvas>
+		<div className="relative h-full w-full">
+			<Canvas camera={{ position: [width + 4, 11, 5], fov: 45 }}>
+				<color args={[SKY_COLOR]} attach="background" />
+				<fog args={[SKY_COLOR, fogNear, fogFar]} attach="fog" />
+				<ambientLight color="#c49a7a" intensity={0.45} />
+				<directionalLight
+					color="#ffd9b0"
+					intensity={1.1}
+					position={[10, 14, 6]}
+				/>
+				<hemisphereLight args={["#f4b88a", "#7a3419", 0.35]} />
+				<Backdrop />
+				<Ground height={height} width={width} />
+				<GridLayer height={height} width={width} />
+				<OriginHighlight />
+				<CardinalLabels height={height} width={width} />
+				<OriginAxes />
+				<Rover
+					lost={lost}
+					orientation={rover.orientation}
+					position={rover.position}
+				/>
+				<RoverLabel
+					lost={lost}
+					orientation={rover.orientation}
+					position={rover.position}
+				/>
+				<Rocks gridHeight={height} gridWidth={width} />
+				<Dunes gridHeight={height} gridWidth={width} />
+				<CameraController grid={grid} mode={cameraMode} rover={rover} />
+			</Canvas>
+			<CameraModeToggle mode={cameraMode} onChange={setCameraMode} />
+		</div>
 	);
 }
+
+interface CameraModeToggleProps {
+	mode: CameraMode;
+	onChange: (mode: CameraMode) => void;
+}
+
+function CameraModeToggle({ mode, onChange }: CameraModeToggleProps) {
+	return (
+		<div
+			aria-label="Mode caméra"
+			className="absolute top-3 right-3 flex gap-1 rounded-md border border-border bg-background/80 p-1 shadow-sm backdrop-blur"
+			role="toolbar"
+		>
+			{CAMERA_MODES.map((option) => (
+				<Button
+					aria-pressed={mode === option.value}
+					key={option.value}
+					onClick={() => onChange(option.value)}
+					size="sm"
+					type="button"
+					variant={mode === option.value ? "secondary" : "ghost"}
+				>
+					{option.label}
+				</Button>
+			))}
+		</div>
+	);
+}
+
+const CAMERA_MODES: ReadonlyArray<{ label: string; value: CameraMode }> = [
+	{ label: "Orbit", value: "orbit" },
+	{ label: "Follow", value: "follow" },
+	{ label: "FPV", value: "fpv" },
+];
 
 interface SizeProps {
 	height: number;
