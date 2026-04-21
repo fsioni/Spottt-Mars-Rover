@@ -7,6 +7,7 @@ import { BufferGeometry, Float32BufferAttribute } from "three";
 
 import { GhostTrail } from "./ghost-trail";
 import { Rover } from "./rover";
+import { RoverLabel } from "./rover-label";
 
 const GROUND_COLOR = "#b07a4e";
 const CELL_COLOR = "#3a2718";
@@ -20,22 +21,18 @@ const FLAT_ROTATION: [number, number, number] = [-Math.PI / 2, 0, 0];
 
 interface SceneProps {
 	currentStep?: number;
-	executionTrace?: ExecutionTrace | null;
 	scenario: Scenario;
+	trace?: ExecutionTrace | null;
 }
 
-export function Scene({ currentStep, executionTrace, scenario }: SceneProps) {
+export function Scene({ currentStep, scenario, trace = null }: SceneProps) {
 	const { grid, rover: initialRover } = scenario;
 	const width = grid.maxX;
 	const height = grid.maxY;
 
-	const effectiveStep =
-		currentStep ?? (executionTrace ? executionTrace.snapshots.length - 1 : 0);
-	const activeRover =
-		executionTrace?.snapshots[effectiveStep]?.rover ?? initialRover;
-	const lost =
-		executionTrace?.lostAt !== undefined &&
-		effectiveStep >= executionTrace.lostAt;
+	const effectiveStep = currentStep ?? (trace ? trace.snapshots.length - 1 : 0);
+	const activeRover = trace?.snapshots[effectiveStep]?.rover ?? initialRover;
+	const lost = trace?.lostAt !== undefined && effectiveStep >= trace.lostAt;
 
 	return (
 		<Canvas camera={{ position: [width + 4, 11, 5], fov: 45 }}>
@@ -46,10 +43,13 @@ export function Scene({ currentStep, executionTrace, scenario }: SceneProps) {
 			<OriginHighlight />
 			<CardinalLabels height={height} width={width} />
 			<OriginAxes />
-			{executionTrace ? (
-				<GhostTrail currentStep={effectiveStep} trace={executionTrace} />
-			) : null}
+			{trace ? <GhostTrail currentStep={effectiveStep} trace={trace} /> : null}
 			<Rover
+				lost={lost}
+				orientation={activeRover.orientation}
+				position={activeRover.position}
+			/>
+			<RoverLabel
 				lost={lost}
 				orientation={activeRover.orientation}
 				position={activeRover.position}

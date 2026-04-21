@@ -1,6 +1,10 @@
 import type { ExecutionTrace } from "@spottt/core/engine";
 import type { ParseError } from "@spottt/core/errors";
-import type { Result, Scenario } from "@spottt/core/types";
+import {
+	formatRoverState,
+	type Result,
+	type Scenario,
+} from "@spottt/core/types";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import {
 	type KeyboardEvent,
@@ -24,12 +28,8 @@ const formatError = (error: ParseError): string => {
 	return `[${error.kind}]${linePart} ${error.message}`;
 };
 
-const formatFinalState = (trace: ExecutionTrace): string => {
-	const { x, y } = trace.final.position;
-	const orientation = trace.final.orientation;
-	const base = `(${x},${y},${orientation})`;
-	return trace.lost ? `${base} LOST` : base;
-};
+const formatFinalState = (trace: ExecutionTrace): string =>
+	formatRoverState(trace.final.position, trace.final.orientation, trace.lost);
 
 export function TerminalInput({
 	executionTrace,
