@@ -1,35 +1,21 @@
-import { Toaster } from "@my-better-t-app/ui/components/sonner";
-import {
-	createRootRouteWithContext,
-	HeadContent,
-	Outlet,
-} from "@tanstack/react-router";
+import { createRootRoute, HeadContent, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 
 import { ThemeProvider } from "@/components/theme-provider";
 
 import "../index.css";
 
-export type RouterAppContext = Record<string, never>;
-
-export const Route = createRootRouteWithContext<RouterAppContext>()({
+export const Route = createRootRoute({
 	component: RootComponent,
 	head: () => ({
 		meta: [
-			{
-				title: "my-better-t-app",
-			},
+			{ title: "Mars Rover" },
 			{
 				name: "description",
-				content: "my-better-t-app is a web application",
+				content: "Simulateur de rover martien avec replay temporel",
 			},
 		],
-		links: [
-			{
-				rel: "icon",
-				href: "/favicon.ico",
-			},
-		],
+		links: [{ rel: "icon", href: "/favicon.ico" }],
 	}),
 });
 
@@ -46,7 +32,6 @@ function RootComponent() {
 				<div className="h-svh w-svw">
 					<Outlet />
 				</div>
-				<Toaster richColors />
 			</ThemeProvider>
 			<TanStackRouterDevtools position="bottom-left" />
 		</>
