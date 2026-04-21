@@ -28,7 +28,7 @@ export function CameraController({ grid, mode, rover }: CameraControllerProps) {
 	const yawRef = useRef(ORIENTATION_ROTATION_Y[rover.orientation]);
 	const initializedRef = useRef(false);
 	const orbitTarget = useMemo<[number, number, number]>(
-		() => [grid.maxX / 2, 0, -grid.maxY / 2],
+		() => [(grid.maxX + 1) / 2, 0, -(grid.maxY + 1) / 2],
 		[grid.maxX, grid.maxY]
 	);
 
@@ -58,8 +58,8 @@ export function CameraController({ grid, mode, rover }: CameraControllerProps) {
 		}
 		yawRef.current += delta * alpha;
 
-		const roverWorldX = rover.position.x;
-		const roverWorldZ = -rover.position.y;
+		const roverWorldX = rover.position.x + 0.5;
+		const roverWorldZ = -rover.position.y - 0.5;
 		const yaw = yawRef.current;
 		const forwardX = -Math.sin(yaw);
 		const forwardZ = -Math.cos(yaw);

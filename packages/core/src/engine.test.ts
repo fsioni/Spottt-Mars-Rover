@@ -193,6 +193,28 @@ describe("execute - snapshots", () => {
 		expect(trace.snapshots.at(-1)?.rover).toEqual(trace.final);
 	});
 
+	it("records lostPosition as the off-grid cell that caused the fall", () => {
+		const trace = execute(
+			makeScenario(makeRover(0, 2, "N", ["F", "F", "L", "F", "R", "F", "F"]))
+		);
+		expect(trace.lost).toBe(true);
+		expect(trace.lostPosition).toEqual({ x: -1, y: 4 });
+	});
+
+	it("records lostPosition north off-grid when lost moving north", () => {
+		const trace = execute(makeScenario(makeRover(2, 8, "N", ["F"])));
+		expect(trace.lost).toBe(true);
+		expect(trace.lostPosition).toEqual({ x: 2, y: 9 });
+	});
+
+	it("does not set lostPosition when the run succeeds", () => {
+		const trace = execute(
+			makeScenario(makeRover(2, 3, "E", ["L", "F", "R", "F", "F"]))
+		);
+		expect(trace.lost).toBe(false);
+		expect(trace.lostPosition).toBeUndefined();
+	});
+
 	it("final equals the rover of the last snapshot", () => {
 		const trace = execute(
 			makeScenario(makeRover(2, 3, "N", ["F", "L", "L", "F", "R"]))
