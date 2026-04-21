@@ -1,7 +1,8 @@
-import { Grid, OrbitControls, Text } from "@react-three/drei";
+import { OrbitControls, Text } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import type { Scenario } from "@spottt/core/types";
-import { DoubleSide } from "three";
+import { useMemo } from "react";
+import { BufferGeometry, Float32BufferAttribute } from "three";
 
 import { Rover } from "./rover";
 
@@ -58,20 +59,23 @@ function Ground({ height, width }: SizeProps) {
 }
 
 function GridLayer({ height, width }: SizeProps) {
+	const geometry = useMemo(() => {
+		const verts: number[] = [];
+		for (let x = 0; x <= width; x++) {
+			verts.push(x, 0.001, 0, x, 0.001, -height);
+		}
+		for (let z = 0; z <= height; z++) {
+			verts.push(0, 0.001, -z, width, 0.001, -z);
+		}
+		const geom = new BufferGeometry();
+		geom.setAttribute("position", new Float32BufferAttribute(verts, 3));
+		return geom;
+	}, [width, height]);
+
 	return (
-		<group position={[width / 2, 0, -height / 2]}>
-			<Grid
-				args={[width, height]}
-				cellColor={CELL_COLOR}
-				cellSize={1}
-				cellThickness={1.2}
-				fadeDistance={80}
-				fadeStrength={1}
-				sectionSize={100}
-				sectionThickness={0}
-				side={DoubleSide}
-			/>
-		</group>
+		<lineSegments geometry={geometry}>
+			<lineBasicMaterial color={CELL_COLOR} />
+		</lineSegments>
 	);
 }
 
