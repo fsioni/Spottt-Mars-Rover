@@ -1,1 +1,5 @@
 @import "@my-better-t-app/ui/globals.css";
+
+body {
+	background: #d48b6a;
+}
