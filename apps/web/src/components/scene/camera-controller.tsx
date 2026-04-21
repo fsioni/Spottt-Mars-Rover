@@ -4,7 +4,7 @@ import type { GridSize, Rover } from "@spottt/core/types";
 import { useMemo, useRef } from "react";
 import { Vector3 } from "three";
 
-import { ORIENTATION_ROTATION_Y } from "./rover";
+import { ORIENTATION_ROTATION_Y } from "./orientation";
 
 export type CameraMode = "orbit" | "follow" | "fpv";
 

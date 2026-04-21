@@ -7,6 +7,7 @@ import { useMemo, useState } from "react";
 import { BufferGeometry, Color, Float32BufferAttribute } from "three";
 
 import { CameraController, type CameraMode } from "./camera-controller";
+import { GhostTrail } from "./ghost-trail";
 import { Rover } from "./rover";
 import { RoverLabel } from "./rover-label";
 
@@ -29,16 +30,19 @@ const ROCK_CANDIDATE_MULTIPLIER = 3;
 const DUNE_COUNT = 14;
 
 interface SceneProps {
+	currentStep?: number;
 	scenario: Scenario;
 	trace?: ExecutionTrace | null;
 }
 
-export function Scene({ scenario, trace = null }: SceneProps) {
-	const { grid } = scenario;
+export function Scene({ currentStep, scenario, trace = null }: SceneProps) {
+	const { grid, rover: initialRover } = scenario;
 	const width = grid.maxX;
 	const height = grid.maxY;
-	const rover = trace?.final ?? scenario.rover;
-	const lost = trace?.lost ?? false;
+
+	const effectiveStep = currentStep ?? (trace ? trace.snapshots.length - 1 : 0);
+	const activeRover = trace?.snapshots[effectiveStep]?.rover ?? initialRover;
+	const lost = trace?.lostAt !== undefined && effectiveStep >= trace.lostAt;
 	const [cameraMode, setCameraMode] = useState<CameraMode>("orbit");
 	const gridSpan = Math.max(width, height);
 	const fogNear = gridSpan + 8;
@@ -62,19 +66,22 @@ export function Scene({ scenario, trace = null }: SceneProps) {
 				<OriginHighlight />
 				<CardinalLabels height={height} width={width} />
 				<OriginAxes />
+				{trace ? (
+					<GhostTrail currentStep={effectiveStep} trace={trace} />
+				) : null}
 				<Rover
 					lost={lost}
-					orientation={rover.orientation}
-					position={rover.position}
+					orientation={activeRover.orientation}
+					position={activeRover.position}
 				/>
 				<RoverLabel
 					lost={lost}
-					orientation={rover.orientation}
-					position={rover.position}
+					orientation={activeRover.orientation}
+					position={activeRover.position}
 				/>
 				<Rocks gridHeight={height} gridWidth={width} />
 				<Dunes gridHeight={height} gridWidth={width} />
-				<CameraController grid={grid} mode={cameraMode} rover={rover} />
+				<CameraController grid={grid} mode={cameraMode} rover={activeRover} />
 			</Canvas>
 			<CameraModeToggle mode={cameraMode} onChange={setCameraMode} />
 		</div>
