@@ -67,8 +67,12 @@ export function Scene({ scenario, step, timeRef, trace = null }: SceneProps) {
 				<OriginHighlight />
 				<CardinalLabels height={height} width={width} />
 				<OriginAxes />
-				{trace ? (
-					<GhostTrail currentStep={effectiveStep} trace={trace} />
+				{trace && timeRef ? (
+					<GhostTrail
+						currentStep={effectiveStep}
+						timeRef={timeRef}
+						trace={trace}
+					/>
 				) : null}
 				{trace && timeRef ? (
 					<Rover step={effectiveStep} timeRef={timeRef} trace={trace} />
