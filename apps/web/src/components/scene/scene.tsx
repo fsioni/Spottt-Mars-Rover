@@ -1,0 +1,165 @@
+import { OrbitControls, Text } from "@react-three/drei";
+import { Canvas } from "@react-three/fiber";
+import type { Scenario } from "@spottt/core/types";
+import { useMemo } from "react";
+import { BufferGeometry, Float32BufferAttribute } from "three";
+
+import { Rover } from "./rover";
+
+const GROUND_COLOR = "#b07a4e";
+const CELL_COLOR = "#3a2718";
+const ORIGIN_HIGHLIGHT_COLOR = "#ff9800";
+const NORTH_COLOR = "#e53935";
+const EAST_COLOR = "#43a047";
+const SOUTH_COLOR = "#fb8c00";
+const WEST_COLOR = "#1e88e5";
+
+const FLAT_ROTATION: [number, number, number] = [-Math.PI / 2, 0, 0];
+
+interface SceneProps {
+	scenario: Scenario;
+}
+
+export function Scene({ scenario }: SceneProps) {
+	const { grid, rover } = scenario;
+	const width = grid.maxX + 1;
+	const height = grid.maxY + 1;
+
+	return (
+		<Canvas camera={{ position: [width + 4, 11, 5], fov: 45 }}>
+			<ambientLight intensity={0.55} />
+			<directionalLight intensity={1} position={[10, 14, 6]} />
+			<Ground height={height} width={width} />
+			<GridLayer height={height} width={width} />
+			<OriginHighlight />
+			<CardinalLabels height={height} width={width} />
+			<OriginAxes />
+			<Rover orientation={rover.orientation} position={rover.position} />
+			<OrbitControls
+				enableDamping
+				makeDefault
+				target={[width / 2, 0, -height / 2]}
+			/>
+		</Canvas>
+	);
+}
+
+interface SizeProps {
+	height: number;
+	width: number;
+}
+
+function Ground({ height, width }: SizeProps) {
+	return (
+		<mesh position={[width / 2, -0.01, -height / 2]} rotation={FLAT_ROTATION}>
+			<planeGeometry args={[width, height]} />
+			<meshStandardMaterial color={GROUND_COLOR} />
+		</mesh>
+	);
+}
+
+function GridLayer({ height, width }: SizeProps) {
+	const geometry = useMemo(() => {
+		const verts: number[] = [];
+		for (let x = 0; x <= width; x++) {
+			verts.push(x, 0.001, 0, x, 0.001, -height);
+		}
+		for (let z = 0; z <= height; z++) {
+			verts.push(0, 0.001, -z, width, 0.001, -z);
+		}
+		const geom = new BufferGeometry();
+		geom.setAttribute("position", new Float32BufferAttribute(verts, 3));
+		return geom;
+	}, [width, height]);
+
+	return (
+		<lineSegments geometry={geometry}>
+			<lineBasicMaterial color={CELL_COLOR} />
+		</lineSegments>
+	);
+}
+
+function OriginHighlight() {
+	return (
+		<group>
+			<mesh position={[0.5, 0.005, -0.5]} rotation={FLAT_ROTATION}>
+				<planeGeometry args={[0.92, 0.92]} />
+				<meshStandardMaterial
+					color={ORIGIN_HIGHLIGHT_COLOR}
+					opacity={0.55}
+					transparent
+				/>
+			</mesh>
+			<Text
+				color="white"
+				fontSize={0.2}
+				position={[0.5, 0.02, -0.5]}
+				rotation={FLAT_ROTATION}
+			>
+				(0,0)
+			</Text>
+		</group>
+	);
+}
+
+function CardinalLabels({ height, width }: SizeProps) {
+	return (
+		<group>
+			<Text
+				color={NORTH_COLOR}
+				fontSize={0.45}
+				position={[width / 2, 0.02, -height - 0.6]}
+				rotation={FLAT_ROTATION}
+			>
+				N
+			</Text>
+			<Text
+				color={SOUTH_COLOR}
+				fontSize={0.45}
+				position={[width / 2, 0.02, 0.6]}
+				rotation={FLAT_ROTATION}
+			>
+				S
+			</Text>
+			<Text
+				color={EAST_COLOR}
+				fontSize={0.45}
+				position={[width + 0.6, 0.02, -height / 2]}
+				rotation={FLAT_ROTATION}
+			>
+				E
+			</Text>
+			<Text
+				color={WEST_COLOR}
+				fontSize={0.45}
+				position={[-0.6, 0.02, -height / 2]}
+				rotation={FLAT_ROTATION}
+			>
+				W
+			</Text>
+		</group>
+	);
+}
+
+function OriginAxes() {
+	return (
+		<group>
+			<mesh position={[0.5, 0.02, 0]} rotation={[0, 0, -Math.PI / 2]}>
+				<cylinderGeometry args={[0.03, 0.03, 1, 12]} />
+				<meshStandardMaterial color={EAST_COLOR} />
+			</mesh>
+			<mesh position={[1.05, 0.02, 0]} rotation={[0, 0, -Math.PI / 2]}>
+				<coneGeometry args={[0.08, 0.15, 12]} />
+				<meshStandardMaterial color={EAST_COLOR} />
+			</mesh>
+			<mesh position={[0, 0.02, -0.5]} rotation={[-Math.PI / 2, 0, 0]}>
+				<cylinderGeometry args={[0.03, 0.03, 1, 12]} />
+				<meshStandardMaterial color={NORTH_COLOR} />
+			</mesh>
+			<mesh position={[0, 0.02, -1.05]} rotation={[-Math.PI / 2, 0, 0]}>
+				<coneGeometry args={[0.08, 0.15, 12]} />
+				<meshStandardMaterial color={NORTH_COLOR} />
+			</mesh>
+		</group>
+	);
+}
