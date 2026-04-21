@@ -1,10 +1,12 @@
 import { OrbitControls, Text } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
+import type { ExecutionTrace } from "@spottt/core/engine";
 import type { Scenario } from "@spottt/core/types";
 import { useMemo } from "react";
 import { BufferGeometry, Color, Float32BufferAttribute } from "three";
 
 import { Rover } from "./rover";
+import { RoverLabel } from "./rover-label";
 
 const SKY_COLOR = "#d48b6a";
 const FAR_GROUND_COLOR = "#7f3a20";
@@ -26,12 +28,15 @@ const DUNE_COUNT = 14;
 
 interface SceneProps {
 	scenario: Scenario;
+	trace?: ExecutionTrace | null;
 }
 
-export function Scene({ scenario }: SceneProps) {
-	const { grid, rover } = scenario;
+export function Scene({ scenario, trace = null }: SceneProps) {
+	const { grid } = scenario;
 	const width = grid.maxX;
 	const height = grid.maxY;
+	const rover = trace?.final ?? scenario.rover;
+	const lost = trace?.lost ?? false;
 	const gridSpan = Math.max(width, height);
 	const fogNear = gridSpan + 8;
 	const fogFar = gridSpan + 60;
@@ -53,7 +58,16 @@ export function Scene({ scenario }: SceneProps) {
 			<OriginHighlight />
 			<CardinalLabels height={height} width={width} />
 			<OriginAxes />
-			<Rover orientation={rover.orientation} position={rover.position} />
+			<Rover
+				lost={lost}
+				orientation={rover.orientation}
+				position={rover.position}
+			/>
+			<RoverLabel
+				lost={lost}
+				orientation={rover.orientation}
+				position={rover.position}
+			/>
 			<Rocks gridHeight={height} gridWidth={width} />
 			<Dunes gridHeight={height} gridWidth={width} />
 			<OrbitControls
