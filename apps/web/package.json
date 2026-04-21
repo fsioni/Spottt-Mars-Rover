@@ -13,20 +13,16 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@hookform/resolvers": "^5.2.2",
-    "@my-better-t-app/env": "workspace:*",
     "@my-better-t-app/ui": "workspace:*",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.6.0",
     "@spottt/core": "workspace:*",
     "@tailwindcss/vite": "^4.2.2",
     "@tanstack/react-router": "^1.168.22",
-    "dotenv": "catalog:",
     "lucide-react": "^1.8.0",
     "next-themes": "catalog:",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
-    "sonner": "^2.0.7",
     "three": "^0.184.0",
     "zod": "catalog:"
   },

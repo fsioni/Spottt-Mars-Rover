@@ -17,7 +17,6 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@my-better-t-app/env": "workspace:*",
     "dotenv": "catalog:",
     "zod": "catalog:"
   },
