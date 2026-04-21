@@ -1,14 +1,19 @@
-import type { ExecutionTrace } from "@spottt/core/engine";
-
-import { ORIENTATION_ROTATION_Y } from "./orientation";
+import { useFrame } from "@react-three/fiber";
+import type { ExecutionTrace, Snapshot } from "@spottt/core/engine";
+import { useRef } from "react";
+import type { Group } from "three";
 
 const TRAIL_COLOR = "#ffd54f";
-const CHEVRON_COLOR = "#ff9800";
+const EMISSIVE_COLOR = "#ff9800";
 const DEFAULT_LIFESPAN = 12;
-const MIN_OPACITY = 0.1;
-const TRAIL_Y = 0.01;
-const PLANE_SIZE = 0.9;
-const CHEVRON_SIZE: [number, number] = [0.55, 0.18];
+const MIN_OPACITY = 0.15;
+const CUBE_SIZE = 0.3;
+const HOVER_Y = 0.55;
+const HOVER_AMPLITUDE = 0.08;
+const YAW_SPEED = 0.9;
+const PITCH_SPEED = 0.45;
+const BOB_SPEED = 2;
+const PHASE_PER_INDEX = 0.7;
 
 interface GhostTrailProps {
 	currentStep: number;
@@ -21,45 +26,62 @@ export function GhostTrail({
 	lifespan = DEFAULT_LIFESPAN,
 	trace,
 }: GhostTrailProps) {
-	const visibleSnapshots = trace.snapshots.slice(0, currentStep + 1);
+	const groupRef = useRef<Group>(null);
+	const elapsed = useRef(0);
+
+	useFrame((_, delta) => {
+		if (!groupRef.current) {
+			return;
+		}
+		elapsed.current += delta;
+		const t = elapsed.current;
+		const children = groupRef.current.children;
+		for (let i = 0; i < children.length; i++) {
+			const child = children[i];
+			const phase = i * PHASE_PER_INDEX;
+			child.rotation.y = t * YAW_SPEED + phase;
+			child.rotation.x = t * PITCH_SPEED + phase * 0.5;
+			child.position.y =
+				HOVER_Y + Math.sin(t * BOB_SPEED + phase) * HOVER_AMPLITUDE;
+		}
+	});
+
+	const cubes = dedupeByCell(trace.snapshots.slice(0, currentStep + 1));
 
 	return (
-		<group>
-			{visibleSnapshots.map((snapshot) => {
+		<group ref={groupRef}>
+			{cubes.map((snapshot) => {
 				const age = currentStep - snapshot.step;
 				const opacity = Math.max(MIN_OPACITY, 1 - age / lifespan);
-				const yaw = ORIENTATION_ROTATION_Y[snapshot.rover.orientation];
 				return (
-					<group
-						key={snapshot.step}
+					<mesh
+						key={`${snapshot.rover.position.x},${snapshot.rover.position.y}`}
 						position={[
 							snapshot.rover.position.x,
-							TRAIL_Y,
+							HOVER_Y,
 							-snapshot.rover.position.y,
 						]}
-						rotation={[0, yaw, 0]}
 					>
-						<mesh rotation={[-Math.PI / 2, 0, 0]}>
-							<planeGeometry args={[PLANE_SIZE, PLANE_SIZE]} />
-							<meshBasicMaterial
-								color={TRAIL_COLOR}
-								depthWrite={false}
-								opacity={opacity * 0.6}
-								transparent
-							/>
-						</mesh>
-						<mesh position={[0, 0.001, -0.2]} rotation={[-Math.PI / 2, 0, 0]}>
-							<planeGeometry args={CHEVRON_SIZE} />
-							<meshBasicMaterial
-								color={CHEVRON_COLOR}
-								depthWrite={false}
-								opacity={opacity}
-								transparent
-							/>
-						</mesh>
-					</group>
+						<boxGeometry args={[CUBE_SIZE, CUBE_SIZE, CUBE_SIZE]} />
+						<meshStandardMaterial
+							color={TRAIL_COLOR}
+							emissive={EMISSIVE_COLOR}
+							emissiveIntensity={0.5 * opacity}
+							opacity={opacity}
+							transparent
+						/>
+					</mesh>
 				);
 			})}
 		</group>
 	);
+}
+
+function dedupeByCell(snapshots: Snapshot[]): Snapshot[] {
+	const byCell = new Map<string, Snapshot>();
+	for (const snapshot of snapshots) {
+		const key = `${snapshot.rover.position.x},${snapshot.rover.position.y}`;
+		byCell.set(key, snapshot);
+	}
+	return Array.from(byCell.values());
 }
