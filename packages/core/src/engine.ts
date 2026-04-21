@@ -77,16 +77,18 @@ export const execute = (scenario: Scenario): ExecutionTrace => {
 	let current = initial;
 	for (const [index, cmd] of initial.commands.entries()) {
 		const result = step(current, cmd, grid);
+		const nextStep = index + 1;
 		if (result.lost) {
+			snapshots.push({ step: nextStep, rover: current, command: cmd });
 			return {
 				snapshots,
 				final: current,
 				lost: true,
-				lostAt: index + 1,
+				lostAt: nextStep,
 			};
 		}
 		current = result.rover;
-		snapshots.push({ step: index + 1, rover: current, command: cmd });
+		snapshots.push({ step: nextStep, rover: current, command: cmd });
 	}
 
 	return { snapshots, final: current, lost: false };

@@ -174,15 +174,23 @@ describe("execute - snapshots", () => {
 		expect(trace.snapshots[5]?.rover.orientation).toBe("E");
 	});
 
-	it("stops emitting snapshots once LOST and ignores remaining commands", () => {
+	it("captures the failing step on LOST and ignores remaining commands", () => {
 		const trace = execute(
 			makeScenario(makeRover(0, 2, "N", ["F", "F", "L", "F", "R", "F", "F"]))
 		);
-		expect(trace.snapshots).toHaveLength(4);
-		expect(trace.snapshots.map((s) => s.step)).toEqual([0, 1, 2, 3]);
-		expect(trace.snapshots[3]?.rover.position).toEqual({ x: 0, y: 4 });
-		expect(trace.snapshots[3]?.rover.orientation).toBe("W");
+		expect(trace.snapshots).toHaveLength(5);
+		expect(trace.snapshots.map((s) => s.step)).toEqual([0, 1, 2, 3, 4]);
+		expect(trace.snapshots.map((s) => s.command)).toEqual([
+			null,
+			"F",
+			"F",
+			"L",
+			"F",
+		]);
+		expect(trace.snapshots[4]?.rover.position).toEqual({ x: 0, y: 4 });
+		expect(trace.snapshots[4]?.rover.orientation).toBe("W");
 		expect(trace.lostAt).toBe(4);
+		expect(trace.snapshots.at(-1)?.rover).toEqual(trace.final);
 	});
 
 	it("final equals the rover of the last snapshot", () => {
