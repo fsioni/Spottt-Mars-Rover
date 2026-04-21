@@ -33,7 +33,9 @@ export function GhostTrail({
 	const elapsed = useRef(0);
 
 	const current = trace.snapshots[currentStep];
-	const currentCellKey = current ? cellKey(current.rover.position) : null;
+	const isLastSnapshot = currentStep >= trace.snapshots.length - 1;
+	const currentCellKey =
+		current && !isLastSnapshot ? cellKey(current.rover.position) : null;
 	const cubes = dedupeByCell(trace.snapshots.slice(0, currentStep + 1));
 
 	useFrame((_, delta) => {
