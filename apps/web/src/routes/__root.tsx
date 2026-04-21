@@ -1,5 +1,4 @@
 import { createRootRoute, HeadContent, Outlet } from "@tanstack/react-router";
-import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 
 import { ThemeProvider } from "@/components/theme-provider";
 
@@ -33,7 +32,6 @@ function RootComponent() {
 					<Outlet />
 				</div>
 			</ThemeProvider>
-			<TanStackRouterDevtools position="bottom-left" />
 		</>
 	);
 }
