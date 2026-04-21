@@ -1,5 +1,16 @@
 {
   "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cmd=$(jq -r '.tool_input.command // empty'); case \"$cmd\" in *--no-verify*) printf '%s' '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"deny\",\"permissionDecisionReason\":\"git --no-verify est bloque par politique projet\"}}' ;; esac"
+          }
+        ]
+      }
+    ],
     "PostToolUse": [
       {
         "hooks": [
@@ -9,6 +20,26 @@
           }
         ],
         "matcher": "Write|Edit"
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "pnpm check-types",
+            "async": true,
+            "statusMessage": "Vérification des types…",
+            "timeout": 180
+          },
+          {
+            "type": "command",
+            "command": "pnpm test",
+            "async": true,
+            "statusMessage": "Tests…",
+            "timeout": 300
+          }
+        ]
       }
     ]
   }
