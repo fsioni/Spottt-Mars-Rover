@@ -17,7 +17,7 @@ export function CameraModeToggle({ mode, onChange }: CameraModeToggleProps) {
 	return (
 		<div
 			aria-label="Mode caméra"
-			className="absolute top-3 right-3 flex gap-1 rounded-md border border-border bg-background/80 p-1 shadow-sm backdrop-blur"
+			className="absolute top-3 right-3 flex gap-1 rounded-md border border-border bg-background/80 p-1 text-foreground shadow-sm backdrop-blur"
 			role="toolbar"
 		>
 			{CAMERA_MODES.map((option) => (
