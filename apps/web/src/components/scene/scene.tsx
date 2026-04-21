@@ -42,8 +42,12 @@ export function Scene({ scenario, step, timeRef, trace = null }: SceneProps) {
 	const height = grid.maxY;
 
 	const effectiveStep = step ?? (trace ? trace.snapshots.length - 1 : 0);
-	const activeRover = trace?.snapshots[effectiveStep]?.rover ?? initialRover;
+	const snapshotRover = trace?.snapshots[effectiveStep]?.rover ?? initialRover;
 	const lost = trace?.lostAt !== undefined && effectiveStep >= trace.lostAt;
+	const activeRover =
+		lost && trace?.lostPosition
+			? { ...snapshotRover, position: trace.lostPosition }
+			: snapshotRover;
 	const [cameraMode, setCameraMode] = useState<CameraMode>("orbit");
 	const gridSpan = Math.max(width, height);
 	const fogNear = gridSpan + 8;

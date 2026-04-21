@@ -18,6 +18,7 @@ export interface ExecutionTrace {
 	final: Rover;
 	lost: boolean;
 	lostAt?: number;
+	lostPosition?: Position;
 	snapshots: Snapshot[];
 }
 
@@ -79,12 +80,18 @@ export const execute = (scenario: Scenario): ExecutionTrace => {
 		const result = step(current, cmd, grid);
 		const nextStep = index + 1;
 		if (result.lost) {
+			const delta = FORWARD_DELTA[current.orientation];
+			const lostPosition: Position = {
+				x: current.position.x + delta.x,
+				y: current.position.y + delta.y,
+			};
 			snapshots.push({ step: nextStep, rover: current, command: cmd });
 			return {
 				snapshots,
 				final: current,
 				lost: true,
 				lostAt: nextStep,
+				lostPosition,
 			};
 		}
 		current = result.rover;

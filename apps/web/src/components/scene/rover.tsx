@@ -23,18 +23,24 @@ export function Rover({ step, timeRef, trace }: RoverProps) {
 	const groupRef = useRef<Group>(null);
 	const { snapshots } = trace;
 
-	const positions = useMemo(
-		() =>
-			snapshots.map(
-				(snapshot) =>
-					new Vector3(
-						snapshot.rover.position.x + 0.5,
-						0,
-						-snapshot.rover.position.y - 0.5
-					)
-			),
-		[snapshots]
-	);
+	const positions = useMemo(() => {
+		const points = snapshots.map(
+			(snapshot) =>
+				new Vector3(
+					snapshot.rover.position.x + 0.5,
+					0,
+					-snapshot.rover.position.y - 0.5
+				)
+		);
+		if (trace.lost && trace.lostAt !== undefined && trace.lostPosition) {
+			points[trace.lostAt] = new Vector3(
+				trace.lostPosition.x + 0.5,
+				0,
+				-trace.lostPosition.y - 0.5
+			);
+		}
+		return points;
+	}, [snapshots, trace.lost, trace.lostAt, trace.lostPosition]);
 
 	const quaternions = useMemo(
 		() =>
