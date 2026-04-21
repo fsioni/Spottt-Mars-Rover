@@ -1,7 +1,4 @@
 import { createRootRoute, HeadContent, Outlet } from "@tanstack/react-router";
-import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
-
-import { ThemeProvider } from "@/components/theme-provider";
 
 import "../index.css";
 
@@ -23,17 +20,9 @@ function RootComponent() {
 	return (
 		<>
 			<HeadContent />
-			<ThemeProvider
-				attribute="class"
-				defaultTheme="dark"
-				disableTransitionOnChange
-				storageKey="vite-ui-theme"
-			>
-				<div className="h-svh w-svw">
-					<Outlet />
-				</div>
-			</ThemeProvider>
-			<TanStackRouterDevtools position="bottom-left" />
+			<div className="dark h-svh w-svw">
+				<Outlet />
+			</div>
 		</>
 	);
 }
